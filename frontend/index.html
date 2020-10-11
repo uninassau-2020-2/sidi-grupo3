@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{margin: 0; padding: 0; box-sizing: border-box;}
+        body{
+            font-family: 'Arial';
+        }
+        h6{
+            color: #000033;
+            font-size: 14px;
+        }
+        h4{
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        #resultados{
+            padding:  10px;
+        }
+    </style>
+</head>
+<body>
+    <form onsubmit="return validateMyForm();">
+        <input id="campoCep" placeholder="busque pelo cep"/>
+        <input type="submit"/>
+    </form>
+
+    <iframe
+    id="googleMaps"
+    width="600"
+    height="450"
+    frameborder="0" style="border:0"
+    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBjhTFuQnBTzE7Whq7iXqIcKDVwbBNp2Ec&q=54430160" allowfullscreen>
+    </iframe>
+    <div id="resultados">
+        <h2>Dados do Resultado</h2>
+        <h6>Cep</h6>
+        <h4 id="cep"></h4>
+
+        <h6>Logradouro</h6>
+        <h4 id="logradouro"></h4>
+            
+        <h6>Complemento</h6>
+        <h4 id="complemento"></h4>
+            
+        <h6>Bairro</h6>
+        <h4 id="bairro"></h4>
+            
+        <h6>Localidade</h6>
+        <h4 id="localidade"></h4>
+            
+        <h6>Uf</h6>
+        <h4 id="uf"></h4>
+            
+        <h6>Ibge</h6>
+        <h4 id="ibge"></h4>
+            
+        <h6>Gia</h6>
+        <h4 id="gia"></h4>
+            
+        <h6>DDD</h6>
+        <h4 id="ddd"></h4>
+            
+        <h6>Siafi</h6>
+        <h4 id="siafi"></h4>
+            
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        function validateMyForm(){
+            var cep = document.querySelector('#campoCep').value;
+
+            if(cep.length === 8){
+                cepValid(cep);
+            }else 
+                alert('cep inválido')
+            return false;
+        }
+
+        function cepValid(cep){
+            axios.get(`http://localhost:3000/cep/${cep}`)
+            .then(function (response) {
+                if(response.data){     
+                    var maps = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBjhTFuQnBTzE7Whq7iXqIcKDVwbBNp2Ec&q=${cep}`;
+                    document.getElementById('googleMaps').src = maps;
+                    preencherDados(response.data);
+                }else
+                    alert("problema com o cep")
+            })
+            .catch(function (error) {
+                alert("cep não encontrado")
+                limparDados()
+            })
+        }
+
+        function preencherDados(dados){
+            document.querySelector("#cep").innerHTML = dados.cep;
+            document.querySelector("#logradouro").innerHTML = dados.logradouro;
+            document.querySelector("#complemento").innerHTML = dados.complemento;
+            document.querySelector("#bairro").innerHTML = dados.bairro;
+            document.querySelector("#localidade").innerHTML = dados.localidade;
+            document.querySelector("#uf").innerHTML = dados.uf;
+            document.querySelector("#ibge").innerHTML = dados.ibge;
+            document.querySelector("#gia").innerHTML = dados.gia;
+            document.querySelector("#ddd").innerHTML = dados.ddd;
+            document.querySelector("#siafi").innerHTML = dados.siafi;
+        }
+
+        function limparDados(){
+            document.querySelector("#cep").innerHTML = "";
+            document.querySelector("#logradouro").innerHTML = "";
+            document.querySelector("#complemento").innerHTML = "";
+            document.querySelector("#bairro").innerHTML = "";
+            document.querySelector("#localidade").innerHTML = "";
+            document.querySelector("#uf").innerHTML = "";
+            document.querySelector("#ibge").innerHTML = "";
+            document.querySelector("#gia").innerHTML = "";
+            document.querySelector("#ddd").innerHTML = "";
+            document.querySelector("#siafi").innerHTML = "";
+        }
+    </script>
+</body>
+</html>
